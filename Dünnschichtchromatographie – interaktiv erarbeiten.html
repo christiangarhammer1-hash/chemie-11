@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dünnschichtchromatographie – interaktiv erarbeiten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eaeff2; --paper:#ffffff; --ink:#17212b; --muted:#56626f; --line:#cdd6dd;
+  --accent:#0d6b74; --accent-ink:#ffffff; --accent-soft:#d9eef0;
+  --ok:#1d7a45; --ok-soft:#dff2e6; --bad:#a8321f; --bad-soft:#f8e2dc;
+  --glass:#c9dbe3; --glass-edge:#8fb0bf; --solvent:#a8d4e6; --chamber-bg:#f3f7f9;
+  --graphite:#5b5f66;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111a20; --paper:#18232b; --ink:#e4ebef; --muted:#9aa9b4; --line:#2c3a44;
+    --accent:#4fb7c0; --accent-ink:#0b1a1d; --accent-soft:#16363b;
+    --ok:#6fd39a; --ok-soft:#173225; --bad:#ff9a85; --bad-soft:#3a1e19;
+    --glass:#2c4652; --glass-edge:#4f7484; --solvent:#2f6178; --chamber-bg:#1c2b33;
+    --graphite:#8a9098;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111a20; --paper:#18232b; --ink:#e4ebef; --muted:#9aa9b4; --line:#2c3a44;
+  --accent:#4fb7c0; --accent-ink:#0b1a1d; --accent-soft:#16363b;
+  --ok:#6fd39a; --ok-soft:#173225; --bad:#ff9a85; --bad-soft:#3a1e19;
+  --glass:#2c4652; --glass-edge:#4f7484; --solvent:#2f6178; --chamber-bg:#1c2b33;
+  --graphite:#8a9098;
+  color-scheme: dark;
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size:17px; line-height:1.55;
+}
+h1,h2,h3{ font-family:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif; line-height:1.15; margin:0; }
+h1{ font-size:clamp(2rem, 5vw, 3.1rem); font-weight:800; letter-spacing:-0.02em; }
+h2{ font-size:1.6rem; font-weight:800; letter-spacing:-0.01em; margin-bottom:.6rem; }
+h3{ font-size:1.12rem; font-weight:600; margin-bottom:.35rem; }
+p{ margin:.4rem 0 .8rem; }
+.wrap{ max-width:1120px; margin:0 auto; padding:0 1.2rem; }
+header.top{ padding:2.2rem 0 1.4rem; }
+header.top p{ max-width:62ch; color:var(--muted); font-size:1.05rem; }
+.rf-formula{ display:inline-flex; align-items:center; gap:.5rem; font-weight:700; }
+.frac{ display:inline-flex; flex-direction:column; text-align:center; line-height:1.1; font-size:.92em; }
+.frac span:first-child{ border-bottom:2px solid currentColor; padding:0 .2rem; }
+
+nav.tabs{ position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); border-bottom:1px solid var(--line); }
+nav.tabs .wrap{ display:flex; gap:.25rem; overflow-x:auto; }
+nav.tabs button{
+  font:inherit; font-weight:700; background:none; border:none; color:var(--muted);
+  padding:.85rem .9rem .75rem; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap;
+}
+nav.tabs button[aria-selected="true"]{ color:var(--ink); border-bottom-color:var(--accent); }
+nav.tabs button:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+section.panel{ display:none; padding:1.8rem 0 3rem; }
+section.panel.active{ display:block; }
+.lead{ max-width:68ch; }
+.box{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.2rem; }
+.task{ border-left:5px solid var(--accent); background:var(--paper); border-radius:4px 12px 12px 4px; padding:.85rem 1.1rem; margin:1rem 0; }
+.task h3{ color:var(--accent); }
+.task ol, .task ul{ margin:.3rem 0 .2rem; padding-left:1.25rem; }
+.task li{ margin:.25rem 0; }
+.grid2{ display:grid; gap:1.2rem; }
+@media (min-width:860px){ .grid2{ grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); } }
+.terms{ display:grid; gap:.8rem; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); margin:1rem 0; }
+.terms dl{ margin:0; }
+.terms dt{ font-weight:700; }
+.terms dd{ margin:.2rem 0 0; color:var(--muted); }
+
+button.btn{
+  font:inherit; font-weight:700; border-radius:999px; padding:.55rem 1.1rem; cursor:pointer;
+  border:2px solid var(--accent); background:var(--accent); color:var(--accent-ink);
+}
+button.btn.ghost{ background:transparent; color:var(--accent); }
+button.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.row{ display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; }
+label.small{ font-size:.92rem; color:var(--muted); }
+select, input[type="number"], input[type="text"]{
+  font:inherit; color:var(--ink); background:var(--paper); border:1.5px solid var(--line);
+  border-radius:8px; padding:.4rem .5rem; max-width:100%;
+}
+input[type="range"]{ width:100%; accent-color:var(--accent); }
+
+/* Model canvas */
+.model{ margin-top:1rem; }
+.model canvas{ width:100%; height:190px; display:block; border-radius:10px; background:var(--chamber-bg); border:1px solid var(--line); }
+.legend{ display:flex; flex-wrap:wrap; gap:1rem; font-size:.92rem; color:var(--muted); margin:.5rem 0; }
+.dot{ display:inline-block; width:.8rem; height:.8rem; border-radius:50%; vertical-align:-.1rem; margin-right:.3rem; }
+.scale-labels{ display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); }
+
+/* Lab */
+.lab{ display:grid; gap:1.2rem; }
+@media (min-width:900px){ .lab{ grid-template-columns: minmax(0,1fr) minmax(0,1.05fr); align-items:start; } }
+.chamber-wrap{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:.8rem; }
+.chamber-wrap svg{ width:100%; height:auto; display:block; max-height:72vh; }
+.spot{ cursor:pointer; }
+.spot:focus{ outline:none; }
+.spot:focus-visible{ stroke:var(--accent); stroke-width:.6; }
+.lanes{ display:grid; gap:.5rem; }
+.lane{ display:grid; grid-template-columns: 2.2rem minmax(0,1fr) minmax(0,.8fr); gap:.4rem; align-items:center; }
+.lane b{ font-family:"Bricolage Grotesque", sans-serif; font-size:1.05rem; text-align:center; background:var(--accent-soft); border-radius:8px; padding:.2rem 0; }
+.lane select{ width:100%; font-size:.93rem; }
+.lane-head{ display:grid; grid-template-columns: 2.2rem minmax(0,1fr) minmax(0,.8fr); gap:.4rem; font-size:.85rem; color:var(--muted); }
+.polbar{ height:10px; border-radius:6px; background:linear-gradient(90deg, #e9d36b, #7fbf9a, #4a8fcf); position:relative; margin:.35rem 0 .1rem; }
+.polbar i{ position:absolute; top:-4px; width:4px; height:18px; background:var(--ink); border-radius:2px; transform:translateX(-50%); transition:left .3s; }
+fieldset{ border:1px solid var(--line); border-radius:10px; padding:.5rem .8rem .7rem; margin:0; }
+legend{ font-weight:700; padding:0 .3rem; }
+.checks label{ display:flex; gap:.5rem; align-items:flex-start; margin:.25rem 0; font-size:.95rem; }
+.checks input{ margin-top:.3rem; accent-color:var(--accent); }
+.status{ min-height:1.6rem; font-size:.95rem; color:var(--muted); }
+.measure{ margin-top:.8rem; }
+.measure .vals{ display:flex; gap:1.2rem; flex-wrap:wrap; margin:.3rem 0 .6rem; }
+.measure .vals div{ font-size:.95rem; }
+.measure .vals strong{ font-size:1.25rem; display:block; }
+.feedback{ border-radius:8px; padding:.45rem .7rem; margin-top:.5rem; font-size:.95rem; display:none; }
+.feedback.ok{ display:block; background:var(--ok-soft); color:var(--ok); }
+.feedback.bad{ display:block; background:var(--bad-soft); color:var(--bad); }
+.table-scroll{ overflow-x:auto; }
+table{ border-collapse:collapse; width:100%; font-size:.93rem; }
+th,td{ text-align:left; padding:.4rem .5rem; border-bottom:1px solid var(--line); }
+th{ color:var(--muted); font-weight:700; }
+.swatch{ display:inline-block; width:.85rem; height:.85rem; border-radius:50%; vertical-align:-.1rem; margin-right:.35rem; border:1px solid rgba(0,0,0,.2); }
+
+/* Case & quiz */
+.cases{ display:grid; gap:1rem; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); }
+.quiz-q{ margin:1rem 0; }
+.quiz-q .opts{ display:grid; gap:.4rem; margin-top:.4rem; }
+.quiz-q .opts button{
+  font:inherit; text-align:left; background:var(--paper); color:var(--ink); border:1.5px solid var(--line);
+  border-radius:10px; padding:.55rem .75rem; cursor:pointer;
+}
+.quiz-q .opts button.right{ border-color:var(--ok); background:var(--ok-soft); }
+.quiz-q .opts button.wrong{ border-color:var(--bad); background:var(--bad-soft); }
+details.teacher{ margin-top:2rem; }
+details.teacher summary{ cursor:pointer; font-weight:700; }
+.muted{ color:var(--muted); }
+footer{ padding:1.5rem 0 2.5rem; color:var(--muted); font-size:.88rem; }
+@media (prefers-reduced-motion: reduce){ .polbar i{ transition:none; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Dünnschichtchromatographie</h1>
+    <p>Welche Farbstoffe stecken im grünen Bonbon, welche Wirkstoffe in der Schmerztablette? Hier erarbeitest du das Trennprinzip, entwickelst eigene Chromatogramme und wertest sie über den R<sub>f</sub>-Wert aus.</p>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Abschnitte">
+  <div class="wrap" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="p1">1 Prinzip</button>
+    <button role="tab" aria-selected="false" data-tab="p2">2 Labor</button>
+    <button role="tab" aria-selected="false" data-tab="p3">3 Fälle lösen</button>
+    <button role="tab" aria-selected="false" data-tab="p4">4 Wissens-Check</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ===== 1 PRINZIP ===== -->
+<section class="panel active" id="p1">
+  <h2>Wie trennt eine DC-Platte Stoffe?</h2>
+  <div class="grid2">
+    <div>
+      <p class="lead">Eine DC-Platte ist mit einer dünnen Schicht Kieselgel beschichtet. Seine Oberfläche trägt viele Si–OH-Gruppen und ist deshalb stark polar. Das Fließmittel steigt durch Kapillarkräfte in der Schicht nach oben und nimmt die aufgetragenen Stoffe mit.</p>
+      <p class="lead">Jedes Teilchen wechselt dabei ständig zwischen zwei Zuständen: Es haftet an der Kieselgel-Oberfläche (<em>Adsorption</em>) oder es löst sich wieder und wird vom Fließmittel weitertransportiert (<em>Desorption</em>). Je stärker ein Stoff haftet, desto weniger Zeit verbringt er in der mobilen Phase und desto kürzer ist seine Laufstrecke.</p>
+      <div class="terms">
+        <dl class="box"><dt>Stationäre Phase</dt><dd>Die unbewegliche Kieselgel-Schicht auf der Platte (polar).</dd></dl>
+        <dl class="box"><dt>Mobile Phase</dt><dd>Das Fließmittel, das durch die Schicht nach oben wandert.</dd></dl>
+        <dl class="box"><dt>R<sub>f</sub>-Wert</dt><dd>
+          <span class="rf-formula">R<sub>f</sub> = <span class="frac"><span>Laufstrecke Substanz s</span><span>Laufstrecke Fließmittel f</span></span></span><br>Liegt immer zwischen 0 und 1.</dd></dl>
+      </div>
+    </div>
+    <div class="box model">
+      <h3>Modell: Teilchen auf der Wanderung</h3>
+      <p class="muted" style="font-size:.95rem">Oben fließt die mobile Phase, unten liegt die Kieselgel-Oberfläche. Verändere die Polarität des Fließmittels und beobachte die beiden Stoffe.</p>
+      <canvas id="modelCanvas" aria-label="Teilchenmodell der Chromatographie"></canvas>
+      <div class="legend">
+        <span><span class="dot" style="background:#c8423a"></span>Stoff P (stark polar)</span>
+        <span><span class="dot" style="background:#2f6fd0"></span>Stoff U (schwach polar)</span>
+        <span>R<sub>f</sub> (P) ≈ <b id="mRfP">–</b> &nbsp; R<sub>f</sub> (U) ≈ <b id="mRfU">–</b></span>
+      </div>
+      <label class="small" for="mPol">Polarität des Fließmittels</label>
+      <input type="range" id="mPol" min="0" max="100" value="45">
+      <div class="scale-labels"><span>unpolar</span><span>polar</span></div>
+      <div class="row" style="margin-top:.6rem">
+        <button class="btn" id="mRun">Modell neu starten</button>
+      </div>
+    </div>
+  </div>
+  <div class="task">
+    <h3>Arbeitsauftrag 1</h3>
+    <ol>
+      <li>Starte das Modell und beschreibe, wie sich die beiden Stoffe verhalten.</li>
+      <li>Erkläre mithilfe der Begriffe Adsorption und Desorption, warum Stoff P eine kürzere Strecke zurücklegt als Stoff U.</li>
+      <li>Stelle das Fließmittel sehr unpolar und dann sehr polar ein. Formuliere eine Je-desto-Regel für den Einfluss der Fließmittelpolarität auf den R<sub>f</sub>-Wert und begründe sie.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===== 2 LABOR ===== -->
+<section class="panel" id="p2">
+  <h2>Virtuelles DC-Labor</h2>
+  <p class="lead">Belege bis zu fünf Bahnen mit Proben, wähle ein Fließmittel und entwickle das Chromatogramm. Auf jede Startmarkierung kannst du zusätzlich eine zweite Probe auftragen (Co-Chromatographie). Danach klickst du auf einen Fleck, um ihn auszumessen.</p>
+
+  <div class="lab">
+    <div class="chamber-wrap">
+      <svg id="plateSvg" viewBox="0 0 112 132" role="img" aria-label="DC-Kammer mit Platte"></svg>
+      <div class="row" style="margin-top:.6rem; justify-content:space-between">
+        <div class="row">
+          <button class="btn" id="runBtn">Chromatogramm entwickeln</button>
+          <button class="btn ghost" id="resetBtn">Neue Platte</button>
+        </div>
+        <button class="btn ghost" id="uvBtn" aria-pressed="false">UV-Lampe (254 nm) einschalten</button>
+      </div>
+      <p class="status" id="status" aria-live="polite">Platte vorbereitet. Proben auf der Startlinie aufgetragen.</p>
+    </div>
+
+    <div style="display:grid; gap:1rem">
+      <div class="box">
+        <h3>Proben auftragen</h3>
+        <div class="lane-head"><span>Bahn</span><span>Probe</span><span>zusätzlich (Co-Spot)</span></div>
+        <div class="lanes" id="lanes"></div>
+      </div>
+      <div class="box">
+        <h3>Fließmittel</h3>
+        <select id="solvent" aria-label="Fließmittel wählen" style="width:100%"></select>
+        <div class="polbar" aria-hidden="true"><i id="polMark"></i></div>
+        <div class="scale-labels"><span>unpolar</span><span>polar</span></div>
+      </div>
+      <fieldset class="checks">
+        <legend>Fehlerquellen einbauen</legend>
+        <label><input type="checkbox" id="errOverload"> Sehr viel Probe aufgetragen</label>
+        <label><input type="checkbox" id="errLow"> Startlinie liegt unterhalb des Fließmittelspiegels</label>
+        <label><input type="checkbox" id="errOpen"> Kammer nicht verschlossen</label>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="box measure" id="measureBox">
+    <h3>Fleck ausmessen</h3>
+    <p class="muted" id="measureHint">Entwickle zuerst ein Chromatogramm und klicke dann auf einen Fleck.</p>
+    <div id="measureContent" hidden>
+      <p id="measureWhich" style="margin:.2rem 0"></p>
+      <label class="checks" style="display:flex; gap:.5rem; font-size:.92rem"><input type="checkbox" id="showHelp" checked> Messhilfe: Strecken anzeigen (sonst am Lineal ablesen)</label>
+      <div class="vals" id="measureVals"></div>
+      <div class="row">
+        <label for="rfInput">Dein R<sub>f</sub>-Wert:</label>
+        <input type="number" id="rfInput" step="0.01" min="0" max="1" style="width:6.5rem" placeholder="z. B. 0,45">
+        <button class="btn" id="rfCheck">Prüfen und eintragen</button>
+      </div>
+      <div class="feedback" id="rfFeedback"></div>
+    </div>
+  </div>
+
+  <div class="box" style="margin-top:1rem">
+    <div class="row" style="justify-content:space-between">
+      <h3>Meine Messwerte</h3>
+      <button class="btn ghost" id="clearLog">Tabelle leeren</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Bahn</th><th>Probe</th><th>Fleck</th><th>Fließmittel</th><th>R<sub>f</sub></th></tr></thead>
+        <tbody id="logBody"><tr><td colspan="5" class="muted">Noch keine Werte. Miss einen Fleck aus und prüfe deinen R<sub>f</sub>-Wert.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="task">
+    <h3>Arbeitsauftrag 2: Das passende Fließmittel finden</h3>
+    <ol>
+      <li>Trage auf Bahn 1 Tartrazin (E 102) und auf Bahn 2 Brillantblau FCF (E 133) auf. Entwickle das Chromatogramm nacheinander mit Heptan, mit Ethylacetat/Ethanol 1:1 und mit Ethanol/Wasser 1:1.</li>
+      <li>Beschreibe jeweils das Ergebnis und erkläre es mit deinem Wissen aus Abschnitt 1.</li>
+      <li>Leite ab, welche Eigenschaften ein gut geeignetes Fließmittel für diese Trennung haben muss.</li>
+    </ol>
+  </div>
+  <div class="task">
+    <h3>Arbeitsauftrag 3: R<sub>f</sub>-Werte bestimmen</h3>
+    <ol>
+      <li>Bestimme mit einem geeigneten Fließmittel die R<sub>f</sub>-Werte aller fünf Farbstoff-Referenzen. Die Werte erscheinen in deiner Messwerttabelle.</li>
+      <li>Wiederhole die Messung für zwei Farbstoffe mit einem anderen Fließmittel. Begründe, warum man R<sub>f</sub>-Werte nur unter gleichen Bedingungen vergleichen darf.</li>
+    </ol>
+  </div>
+  <div class="task">
+    <h3>Arbeitsauftrag 4: Fehlerquellen untersuchen</h3>
+    <ol>
+      <li>Aktiviere nacheinander jeweils genau eine Fehlerquelle und entwickle ein Chromatogramm mit den gleichen Proben wie vorher.</li>
+      <li>Beschreibe, wie sich das Chromatogramm verändert, und erkläre die Ursache.</li>
+      <li>Formuliere für jede Fehlerquelle eine Regel für das Arbeiten im echten Labor.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===== 3 FÄLLE ===== -->
+<section class="panel" id="p3">
+  <h2>Fälle lösen mit Co-Chromatographie</h2>
+  <p class="lead">Bei der Co-Chromatographie trägt man die unbekannte Probe und eine Referenzsubstanz auf dieselbe Platte auf, oft zusätzlich beide übereinander auf denselben Startpunkt. Liegen Probenfleck und Referenzfleck auf gleicher Höhe und verschmelzen sie im Co-Spot zu einem einzigen Fleck, handelt es sich sehr wahrscheinlich um denselben Stoff.</p>
+  <div class="task">
+    <h3>Arbeitsauftrag 5</h3>
+    <ol>
+      <li>Plane für jede Probe im Labor eine Platte, mit der du ihre Bestandteile eindeutig identifizieren kannst. Nutze dabei auch die Spalte „zusätzlich (Co-Spot)“.</li>
+      <li>Kreuze unten die Bestandteile an und überprüfe deine Lösung.</li>
+      <li>Probe D enthält farblose Wirkstoffe. Erkläre, wie du sie trotzdem sichtbar machst und warum sie unter UV-Licht als dunkle Flecken erscheinen.</li>
+    </ol>
+  </div>
+  <div class="cases" id="cases"></div>
+</section>
+
+<!-- ===== 4 CHECK ===== -->
+<section class="panel" id="p4">
+  <h2>Wissens-Check</h2>
+  <p class="lead">Wähle jeweils die richtige Antwort. Du bekommst sofort eine Rückmeldung.</p>
+  <div id="quiz"></div>
+  <p id="quizScore" class="box" style="display:none"></p>
+
+  <details class="teacher box">
+    <summary>Hinweise für Lehrkräfte</summary>
+    <p>Die Simulation arbeitet mit einem vereinfachten Modell: Jedem Stoff ist eine fiktive Adsorptionsstärke zugeordnet, jedem Fließmittel ein Polaritätswert. Die R<sub>f</sub>-Werte sind deshalb nicht mit Literaturwerten vergleichbar, die qualitativen Zusammenhänge (Fließmittelpolarität, Trennleistung, Co-Chromatographie, Sichtbarmachen) stimmen aber.</p>
+    <p>Die Fehlerquellen bilden typische Mess- und Verfahrensfehler ab. Bei zu viel Probe entstehen große, geschweifte Flecken, die sich überlappen. Liegt die Startlinie unter dem Fließmittelspiegel, löst sich die Probe im Fließmittelvorrat, die Flecken bleiben blass und das Fließmittel färbt sich. Bei offener Kammer ist die Gasphase nicht gesättigt, Fließmittel verdunstet von der Platte, die Front verläuft ungleichmäßig und die R<sub>f</sub>-Werte werden unzuverlässig.</p>
+    <p>Lösungen der Fälle: A = Tartrazin + Brillantblau FCF; B = Gelborange S + Allurarot AC; C = Azorubin + Brillantblau FCF; D = Acetylsalicylsäure + Paracetamol + Coffein (kein Ibuprofen). Probe D bildet zugleich eine Brücke zu Lernbereich 3.2 (Reinheitsprüfung und Zusammensetzung von Schmerzmitteln).</p>
+    <p>Bezug zum LehrplanPLUS Chemie 11 (NTG): LB 2 „chromatographische Analysemethoden: DC; stationäre und mobile Phase; Wahl des Fließmittels; Auswertung von Chromatogrammen (Co-Chromatographie, R<sub>f</sub>-Wert), ggf. Sichtbarmachen der Banden“ sowie LB 1 (Ursachen für Mess- und Verfahrensfehler, Modelle und digitale Simulationen).</p>
+  </details>
+</section>
+</main>
+
+<footer><div class="wrap">Simulation mit vereinfachten Modellwerten für den Unterricht. Ersetzt nicht das reale Experiment.</div></footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Tabs ---------- */
+const tabs = document.querySelectorAll('nav.tabs button');
+tabs.forEach(b => b.addEventListener('click', () => {
+  tabs.forEach(t => t.setAttribute('aria-selected', String(t === b)));
+  document.querySelectorAll('section.panel').forEach(p => p.classList.toggle('active', p.id === b.dataset.tab));
+  if (b.dataset.tab === 'p1') model.resize();
+  window.scrollTo({ top: document.querySelector('nav.tabs').offsetTop, behavior: 'auto' });
+}));
+
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Data ---------- */
+const SUBS = {
+  E102:{n:'Tartrazin (E 102)', c:'#e7b400', cn:'gelb', a:0.66},
+  E110:{n:'Gelborange S (E 110)', c:'#ec7a12', cn:'orange', a:0.56},
+  E129:{n:'Allurarot AC (E 129)', c:'#d21f3a', cn:'rot', a:0.52},
+  E122:{n:'Azorubin (E 122)', c:'#931451', cn:'purpurrot', a:0.47},
+  E133:{n:'Brillantblau FCF (E 133)', c:'#1c58d6', cn:'blau', a:0.60},
+  IBU:{n:'Ibuprofen', c:null, cn:'farblos', a:0.18},
+  ASS:{n:'Acetylsalicylsäure', c:null, cn:'farblos', a:0.30},
+  PAR:{n:'Paracetamol', c:null, cn:'farblos', a:0.40},
+  COF:{n:'Coffein', c:null, cn:'farblos', a:0.50}
+};
+const REFS = ['E102','E110','E129','E122','E133','IBU','ASS','PAR','COF'];
+const SAMPLES = { '': {label:'– leer –', comp:[]} };
+REFS.forEach(k => SAMPLES['r_'+k] = {label:'Referenz: '+SUBS[k].n, short:SUBS[k].n, comp:[k]});
+SAMPLES.pA = {label:'Probe A: grünes Bonbon', short:'Probe A', comp:['E102','E133']};
+SAMPLES.pB = {label:'Probe B: orangefarbenes Gummibärchen', short:'Probe B', comp:['E110','E129']};
+SAMPLES.pC = {label:'Probe C: lila Brausepulver', short:'Probe C', comp:['E122','E133']};
+SAMPLES.pD = {label:'Probe D: Kombi-Schmerztablette', short:'Probe D', comp:['ASS','PAR','COF']};
+
+const SOLVENTS = [
+  {id:'hep', n:'Heptan', s:0.05},
+  {id:'tol', n:'Toluol', s:0.18},
+  {id:'eac', n:'Ethylacetat', s:0.35},
+  {id:'eae', n:'Ethylacetat/Ethanol 1:1', s:0.50},
+  {id:'eth', n:'Ethanol', s:0.62},
+  {id:'ewa', n:'Ethanol/Wasser 1:1', s:0.82}
+];
+
+function rfOf(a, s){ const r = 1/(1+Math.exp(-10*(s-a))); return Math.min(0.97, Math.max(0.02, r)); }
+
+/* ---------- Model canvas (Abschnitt 1) ---------- */
+const model = (function(){
+  const cv = document.getElementById('modelCanvas');
+  const ctx = cv.getContext('2d');
+  const slider = document.getElementById('mPol');
+  const N = 34;
+  let W = 600, H = 190, parts = [], front = 0, raf = null, running = false;
+  const types = [ {a:0.62, col:'#c8423a', id:'P'}, {a:0.32, col:'#2f6fd0', id:'U'} ];
+
+  function sVal(){ return slider.value/100; }
+  function updateLabels(){
+    const s = sVal();
+    document.getElementById('mRfP').textContent = rfOf(types[0].a, s).toFixed(2).replace('.',',');
+    document.getElementById('mRfU').textContent = rfOf(types[1].a, s).toFixed(2).replace('.',',');
+  }
+  function resize(){
+    const r = cv.getBoundingClientRect();
+    if (!r.width) return;
+    const dpr = window.devicePixelRatio || 1;
+    W = r.width; H = r.height;
+    cv.width = W*dpr; cv.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    draw();
+  }
+  function reset(){
+    parts = [];
+    types.forEach((t,ti) => { for (let i=0;i<N;i++) parts.push({t:ti, x:Math.random()*0.012, mob:Math.random()<0.5, y:Math.random()}); });
+    front = 0.02;
+  }
+  function step(){
+    const s = sVal(), v = 0.0028, k = 0.12;
+    if (front < 1) front = Math.min(1, front + v);
+    parts.forEach(p => {
+      const R = rfOf(types[p.t].a, s);
+      if (p.mob){
+        p.x = Math.min(front, p.x + v*(0.85+Math.random()*0.3));
+        if (Math.random() < k*(1-R)) p.mob = false;
+      } else if (Math.random() < k*R) { p.mob = true; p.y = Math.random(); }
+    });
+    return front < 1;
+  }
+  function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const x0 = 24, x1 = W-16, mobTop = 14, mobBot = H*0.55, surf = H*0.62;
+    const X = x => x0 + x*(x1-x0);
+    // stationary phase
+    ctx.fillStyle = css('--glass'); ctx.fillRect(0, surf, W, H-surf);
+    ctx.fillStyle = css('--muted'); ctx.font = '11px "Atkinson Hyperlegible", sans-serif';
+    for (let x=x0; x<x1; x+=46) ctx.fillText('Si–OH', x, surf+14);
+    ctx.fillText('stationäre Phase (Kieselgel)', 8, H-8);
+    // mobile phase (wet area)
+    ctx.fillStyle = css('--solvent'); ctx.globalAlpha = 0.55;
+    ctx.fillRect(0, mobTop-6, X(front), surf-mobTop+6); ctx.globalAlpha = 1;
+    ctx.fillStyle = css('--muted'); ctx.fillText('mobile Phase (Fließmittel) →', 8, mobTop+2);
+    // start + front
+    ctx.strokeStyle = css('--graphite'); ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(X(0), mobTop); ctx.lineTo(X(0), H-20); ctx.stroke();
+    ctx.setLineDash([]); ctx.strokeStyle = css('--accent'); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(X(front), mobTop-6); ctx.lineTo(X(front), surf); ctx.stroke(); ctx.lineWidth = 1;
+    // particles
+    parts.forEach(p => {
+      const y = p.mob ? mobTop + 10 + p.y*(mobBot-mobTop-10) : surf - 5 - (p.t*4);
+      ctx.fillStyle = types[p.t].col;
+      ctx.beginPath(); ctx.arc(X(p.x), y, p.mob ? 4 : 4.3, 0, Math.PI*2); ctx.fill();
+      if (!p.mob){ ctx.strokeStyle = css('--ink'); ctx.globalAlpha=.35; ctx.stroke(); ctx.globalAlpha=1; }
+    });
+  }
+  function loop(){
+    const more = step(); draw();
+    if (more && running) raf = requestAnimationFrame(loop); else running = false;
+  }
+  function start(){
+    cancelAnimationFrame(raf); reset();
+    if (reduceMotion){ while(step()){} draw(); return; }
+    running = true; loop();
+  }
+  slider.addEventListener('input', updateLabels);
+  document.getElementById('mRun').addEventListener('click', start);
+  window.addEventListener('resize', resize);
+  updateLabels(); reset();
+  requestAnimationFrame(resize);
+  return { resize };
+})();
+
+/* ---------- Lab ---------- */
+const svg = document.getElementById('plateSvg');
+const statusEl = document.getElementById('status');
+const LANE_X = [27.5, 42.5, 57.5, 72.5, 87.5];
+const PLATE = {x:20, w:75, bottom:122, top:22}; // plate 100 mm high
+const START_H = 15, FRONT_MAX = 90;
+const OPEN_JITTER = [1.09, 0.93, 1.05, 0.9, 1.07];
+const state = {
+  lanes: [ {a:'r_E102', b:''}, {a:'r_E133', b:''}, {a:'pA', b:''}, {a:'', b:''}, {a:'', b:''} ],
+  solvent:'eae', t:0, running:false, done:false, uv:false, sel:null, log:[]
+};
+const H2Y = h => PLATE.bottom - h;
+
+function solventObj(){ return SOLVENTS.find(s => s.id === state.solvent); }
+function errs(){ return { overload:document.getElementById('errOverload').checked, low:document.getElementById('errLow').checked, open:document.getElementById('errOpen').checked }; }
+
+// lane UI
+const lanesEl = document.getElementById('lanes');
+function optionsHtml(sel, allowEmptyLabel){
+  let h = `<option value="">${allowEmptyLabel}</option>`;
+  h += '<optgroup label="Referenzen: Farbstoffe">' + ['E102','E110','E129','E122','E133'].map(k => `<option value="r_${k}" ${sel==='r_'+k?'selected':''}>${SUBS[k].n}</option>`).join('') + '</optgroup>';
+  h += '<optgroup label="Referenzen: Wirkstoffe">' + ['IBU','ASS','PAR','COF'].map(k => `<option value="r_${k}" ${sel==='r_'+k?'selected':''}>${SUBS[k].n}</option>`).join('') + '</optgroup>';
+  h += '<optgroup label="Unbekannte Proben">' + ['pA','pB','pC','pD'].map(k => `<option value="${k}" ${sel===k?'selected':''}>${SAMPLES[k].label}</option>`).join('') + '</optgroup>';
+  return h;
+}
+function buildLanes(){
+  lanesEl.innerHTML = state.lanes.map((l,i) => `
+    <div class="lane">
+      <b>${i+1}</b>
+      <select data-lane="${i}" data-k="a" aria-label="Probe auf Bahn ${i+1}">${optionsHtml(l.a,'– leer –')}</select>
+      <select data-lane="${i}" data-k="b" aria-label="Zusätzliche Probe auf Bahn ${i+1}">${optionsHtml(l.b,'– keine –')}</select>
+    </div>`).join('');
+}
+lanesEl.addEventListener('change', e => {
+  const s = e.target; if (!s.dataset.lane) return;
+  state.lanes[+s.dataset.lane][s.dataset.k] = s.value; newPlate();
+});
+const solventSel = document.getElementById('solvent');
+solventSel.innerHTML = SOLVENTS.map(s => `<option value="${s.id}" ${s.id===state.solvent?'selected':''}>${s.n}</option>`).join('');
+solventSel.addEventListener('change', () => { state.solvent = solventSel.value; updatePol(); newPlate(); });
+function updatePol(){ document.getElementById('polMark').style.left = (solventObj().s*100)+'%'; }
+['errOverload','errLow','errOpen'].forEach(id => document.getElementById(id).addEventListener('change', newPlate));
+
+function laneLabel(i){
+  const l = state.lanes[i]; const parts = [];
+  if (l.a) parts.push(SAMPLES[l.a].short); if (l.b) parts.push(SAMPLES[l.b].short);
+  return parts.join(' + ') || '–';
+}
+function laneComps(i){
+  const l = state.lanes[i]; const set = new Set();
+  [l.a,l.b].forEach(k => { if (k) SAMPLES[k].comp.forEach(c => set.add(c)); });
+  return [...set];
+}
+
+function geometry(){
+  const e = errs();
+  const level = e.low ? 19 : 8;
+  const ease = 1 - Math.pow(1-state.t, 2);
+  const frontH = level + (FRONT_MAX - level) * ease;
+  return {e, level, frontH};
+}
+function laneFrontH(i, g){
+  if (!g.e.open) return g.frontH;
+  const rel = (LANE_X[i]-57.5)/37.5;
+  return g.frontH - 6*rel*rel*state.t;
+}
+function spotsData(){
+  const g = geometry(), s = solventObj().s, out = [];
+  for (let i=0;i<5;i++){
+    const fH = laneFrontH(i,g);
+    const df = Math.max(0, fH - START_H);
+    laneComps(i).forEach(c => {
+      let rf = rfOf(SUBS[c].a, s);
+      if (g.e.open) rf = Math.min(0.97, rf*OPEN_JITTER[i]);
+      const d = rf*df;
+      out.push({lane:i, comp:c, d, df, rf, h:START_H+d});
+    });
+  }
+  return {g, spots: out};
+}
+
+function render(){
+  const {g, spots} = spotsData();
+  const uv = state.uv;
+  const plateFill = uv ? '#8ff2b2' : '#f5f5f0';
+  const wetFill = uv ? '#7fe3a4' : '#e3e8ea';
+  let h = '';
+  // chamber
+  h += `<rect x="0" y="0" width="112" height="132" fill="${uv ? '#241a3a' : 'var(--chamber-bg)'}"/>`;
+  h += `<rect x="12" y="12" width="91" height="114" rx="2.5" fill="var(--glass)" opacity=".35" stroke="var(--glass-edge)" stroke-width=".8"/>`;
+  h += `<rect x="9" y="8" width="97" height="4.5" rx="1.2" fill="var(--glass-edge)" opacity="${state.done?0.25:0.9}"/>`;
+  // solvent pool
+  const poolTint = g.e.low && state.t>0.05 ? blendTint() : null;
+  h += `<rect x="12.5" y="${H2Y(g.level)}" width="90" height="${126-H2Y(g.level)}" fill="${poolTint || 'var(--solvent)'}" opacity="${state.done?0.3:0.75}"/>`;
+  // plate
+  h += `<rect x="${PLATE.x}" y="${PLATE.top}" width="${PLATE.w}" height="100" fill="${plateFill}" stroke="#9aa3a8" stroke-width=".4"/>`;
+  if (state.t>0){
+    if (g.e.open){
+      let d = `M${PLATE.x},${PLATE.bottom}`;
+      for (let x=PLATE.x; x<=PLATE.x+PLATE.w; x+=2.5){ const rel=(x-57.5)/37.5; d += ` L${x},${H2Y(g.frontH - 6*rel*rel*state.t)}`; }
+      d += ` L${PLATE.x+PLATE.w},${PLATE.bottom} Z`;
+      h += `<path d="${d}" fill="${wetFill}" opacity="${state.done?0.5:0.95}"/>`;
+    } else {
+      h += `<rect x="${PLATE.x}" y="${H2Y(g.frontH)}" width="${PLATE.w}" height="${g.frontH}" fill="${wetFill}" opacity="${state.done?0.5:0.95}"/>`;
+    }
+  }
+  // ruler
+  h += ruler();
+  // start line & marks
+  h += `<line x1="${PLATE.x+2}" x2="${PLATE.x+PLATE.w-2}" y1="${H2Y(START_H)}" y2="${H2Y(START_H)}" stroke="var(--graphite)" stroke-width=".35" stroke-dasharray="1.2 .8"/>`;
+  LANE_X.forEach((x,i) => { h += `<text x="${x}" y="${PLATE.top+5}" font-size="3.6" text-anchor="middle" fill="#5b6066" font-family="Atkinson Hyperlegible, sans-serif">${i+1}</text>`; });
+  // front marking
+  if (state.done){
+    if (g.e.open){
+      let d = '';
+      for (let x=PLATE.x; x<=PLATE.x+PLATE.w; x+=2.5){ const rel=(x-57.5)/37.5; d += (d?' L':'M')+x+','+H2Y(g.frontH-6*rel*rel); }
+      h += `<path d="${d}" fill="none" stroke="var(--graphite)" stroke-width=".4"/>`;
+    } else {
+      h += `<line x1="${PLATE.x+1}" x2="${PLATE.x+PLATE.w-1}" y1="${H2Y(g.frontH)}" y2="${H2Y(g.frontH)}" stroke="var(--graphite)" stroke-width=".4"/>`;
+    }
+  }
+  // spots
+  spots.forEach((sp, idx) => {
+    const sub = SUBS[sp.comp];
+    const visible = uv || sub.c;
+    if (!visible) return;
+    const x = LANE_X[sp.lane], y = H2Y(sp.h);
+    let rx = 1.6 + 0.022*sp.d, ry = 1.1 + 0.03*sp.d;
+    if (g.e.overload){ rx += 1.6; ry += 1.4; }
+    if (g.e.open){ rx += 0.6; ry += 0.6; }
+    const col = uv ? '#2b2140' : sub.c;
+    let op = uv ? 0.78 : 0.88;
+    if (g.e.low && state.t>0) op *= 0.18;
+    if (g.e.overload && sp.d>1){
+      h += `<ellipse cx="${x}" cy="${y + Math.min(sp.d*0.45, 9)}" rx="${rx*0.75}" ry="${Math.min(sp.d*0.45, 9)+ry*0.5}" fill="${col}" opacity="${op*0.35}"/>`;
+    }
+    const sel = state.sel && state.sel.lane===sp.lane && state.sel.comp===sp.comp;
+    h += `<ellipse class="spot" data-i="${idx}" tabindex="${state.done?0:-1}" role="button" aria-label="Fleck auf Bahn ${sp.lane+1}" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${col}" opacity="${op}" ${sel?'stroke="var(--accent)" stroke-width=".7"':''}/>`;
+  });
+  // measurement overlay
+  if (state.done && state.sel){
+    const sp = spots.find(s => s.lane===state.sel.lane && s.comp===state.sel.comp);
+    if (sp){
+      const x = LANE_X[sp.lane];
+      const ys = H2Y(START_H), yspot = H2Y(sp.h), yf = H2Y(START_H+sp.df);
+      h += bracket(x+5.2, ys, yspot, 'var(--accent)', 's');
+      h += bracket(x+6.9, ys, yf, '#5b6066', 'f');
+    }
+  }
+  svg.innerHTML = h;
+}
+function bracket(x, y1, y2, col, lab){
+  return `<g stroke="${col}" stroke-width=".45"><line x1="${x}" x2="${x}" y1="${y1}" y2="${y2}"/><line x1="${x-.8}" x2="${x+.8}" y1="${y1}" y2="${y1}"/><line x1="${x-.8}" x2="${x+.8}" y1="${y2}" y2="${y2}"/></g><text x="${x+.6}" y="${(y1+y2)/2}" font-size="3" fill="${col}" font-family="Atkinson Hyperlegible, sans-serif" font-weight="700">${lab}</text>`;
+}
+function ruler(){
+  const x = 13.5, w = 5.5;
+  let h = `<rect x="${x}" y="${H2Y(START_H+80)}" width="${w}" height="${80+1}" fill="#fbf6df" stroke="#b9ae7a" stroke-width=".3"/>`;
+  for (let mm=0; mm<=80; mm++){
+    const y = H2Y(START_H+mm);
+    const len = mm%10===0 ? 2.6 : (mm%5===0 ? 1.8 : 1);
+    h += `<line x1="${x+w-len}" x2="${x+w}" y1="${y}" y2="${y}" stroke="#6b6236" stroke-width="${mm%10===0?.3:.18}"/>`;
+    if (mm%10===0) h += `<text x="${x+.5}" y="${y+1}" font-size="2.4" fill="#6b6236" font-family="Atkinson Hyperlegible, sans-serif">${mm/10}</text>`;
+  }
+  h += `<text x="${x}" y="${H2Y(START_H+80)-1.2}" font-size="2.3" fill="var(--muted)" font-family="Atkinson Hyperlegible, sans-serif">cm</text>`;
+  return h;
+}
+function blendTint(){
+  // tint of solvent pool when samples dissolve into it
+  const cols = []; for (let i=0;i<5;i++) laneComps(i).forEach(c => { if (SUBS[c].c) cols.push(SUBS[c].c); });
+  if (!cols.length) return null;
+  let r=0,g=0,b=0; cols.forEach(c => { r+=parseInt(c.slice(1,3),16); g+=parseInt(c.slice(3,5),16); b+=parseInt(c.slice(5,7),16); });
+  const n = cols.length, mix = 0.45;
+  const base = [168,212,230];
+  const f = (v,i) => Math.round(base[i]*(1-mix) + (v/n)*mix);
+  return `rgb(${f(r,0)},${f(g,1)},${f(b,2)})`;
+}
+
+// interaction
+let animStart = 0;
+const runBtn = document.getElementById('runBtn');
+runBtn.addEventListener('click', () => {
+  if (state.running) return;
+  if (!state.lanes.some((l,i) => laneComps(i).length)){ statusEl.textContent = 'Trage zuerst auf mindestens einer Bahn eine Probe auf.'; return; }
+  state.t = 0; state.done = false; state.sel = null; state.running = true; hideMeasure();
+  runBtn.disabled = true; statusEl.textContent = 'Kammer verschlossen. Das Fließmittel steigt auf …';
+  if (reduceMotion){ state.t = 1; finish(); return; }
+  animStart = performance.now();
+  requestAnimationFrame(tick);
+});
+function tick(now){
+  state.t = Math.min(1, (now-animStart)/6500);
+  render();
+  if (state.t < 1) requestAnimationFrame(tick); else finish();
+}
+function finish(){
+  state.running = false; state.done = true; runBtn.disabled = false;
+  render();
+  const e = errs();
+  let msg = 'Platte entnommen, Fließmittelfront mit Bleistift markiert. Klicke auf einen Fleck, um ihn auszumessen.';
+  if (e.low) msg = 'Platte entnommen. Auffällig: Das Fließmittel in der Kammer hat sich verfärbt. ' + 'Klicke auf einen Fleck, um ihn auszumessen.';
+  if (!state.uv && state.lanes.some((l,i) => laneComps(i).some(c => !SUBS[c].c))) msg += ' Hinweis: Auf manchen Bahnen ist nichts zu sehen.';
+  statusEl.textContent = msg;
+}
+document.getElementById('resetBtn').addEventListener('click', newPlate);
+function newPlate(){
+  if (state.running) { state.running = false; }
+  state.t = 0; state.done = false; state.sel = null; runBtn.disabled = false;
+  hideMeasure(); render();
+  statusEl.textContent = 'Neue Platte vorbereitet. Proben auf der Startlinie aufgetragen.';
+}
+const uvBtn = document.getElementById('uvBtn');
+uvBtn.addEventListener('click', () => {
+  state.uv = !state.uv;
+  uvBtn.setAttribute('aria-pressed', String(state.uv));
+  uvBtn.textContent = state.uv ? 'UV-Lampe ausschalten' : 'UV-Lampe (254 nm) einschalten';
+  if (state.sel && !state.uv && !SUBS[state.sel.comp].c){ state.sel = null; hideMeasure(); }
+  render();
+});
+function selectSpot(target){
+  if (!state.done) return;
+  const {spots} = spotsData();
+  const sp = spots[+target.dataset.i]; if (!sp) return;
+  state.sel = {lane:sp.lane, comp:sp.comp};
+  render(); showMeasure(sp);
+}
+svg.addEventListener('click', e => { const t = e.target.closest('.spot'); if (t) selectSpot(t); });
+svg.addEventListener('keydown', e => { if ((e.key==='Enter'||e.key===' ') && e.target.classList.contains('spot')){ e.preventDefault(); selectSpot(e.target); } });
+
+// measurement
+const mContent = document.getElementById('measureContent'), mHint = document.getElementById('measureHint');
+const rfInput = document.getElementById('rfInput'), fb = document.getElementById('rfFeedback');
+let current = null;
+function round05(v){ return Math.round(v*2)/2; }
+function fmt(v, d){ return v.toFixed(d).replace('.',','); }
+function showMeasure(sp){
+  const s = round05(sp.d), f = round05(sp.df);
+  current = {sp, s, f};
+  mHint.hidden = true; mContent.hidden = false;
+  const sub = SUBS[sp.comp];
+  const look = sub.c ? `${sub.cn}er Fleck` : 'Fleck nur unter UV-Licht sichtbar';
+  document.getElementById('measureWhich').innerHTML = `Bahn ${sp.lane+1} (${laneLabel(sp.lane)}): ${look}`;
+  updateVals();
+  rfInput.value = ''; fb.className = 'feedback'; fb.textContent = '';
+}
+function updateVals(){
+  if (!current) return;
+  const help = document.getElementById('showHelp').checked;
+  document.getElementById('measureVals').innerHTML = help
+    ? `<div>Laufstrecke Substanz<strong>s = ${fmt(current.s,1)} mm</strong></div><div>Laufstrecke Fließmittel<strong>f = ${fmt(current.f,1)} mm</strong></div>`
+    : `<div class="muted">Lies s und f am Lineal links neben der Platte ab (Nullpunkt = Startlinie, Skala in cm, Teilstriche in mm). Miss bis zur Fleckmitte.</div>`;
+}
+document.getElementById('showHelp').addEventListener('change', updateVals);
+function hideMeasure(){ current = null; mHint.hidden = false; mContent.hidden = true; }
+document.getElementById('rfCheck').addEventListener('click', () => {
+  if (!current) return;
+  const v = parseFloat(String(rfInput.value).replace(',','.'));
+  if (isNaN(v)){ fb.className='feedback bad'; fb.textContent='Gib einen Zahlenwert ein, z. B. 0,45.'; return; }
+  const truth = current.s / current.f;
+  if (v > 1){ fb.className='feedback bad'; fb.textContent='Ein Rf-Wert kann nicht größer als 1 sein. Prüfe, ob du s und f vertauscht hast.'; return; }
+  if (Math.abs(v-truth) <= 0.03){
+    fb.className='feedback ok'; fb.textContent = `Richtig: Rf = ${fmt(current.s,1)} mm : ${fmt(current.f,1)} mm ≈ ${fmt(truth,2)}. Der Wert steht jetzt in deiner Tabelle.`;
+    addLog(current.sp, truth);
+  } else {
+    fb.className='feedback bad';
+    fb.textContent = Math.abs(v - current.f/current.s) < 0.05 ? 'Du hast den Bruch umgedreht. Rf = Laufstrecke Substanz geteilt durch Laufstrecke Fließmittel.' : 'Noch nicht. Rf = s / f, gemessen jeweils von der Startlinie aus. Rechne noch einmal nach.';
+  }
+});
+function addLog(sp, rf){
+  const key = sp.lane+'|'+laneLabel(sp.lane)+'|'+sp.comp+'|'+state.solvent+'|'+JSON.stringify(errs());
+  if (state.log.some(r => r.key===key)) return;
+  const sub = SUBS[sp.comp];
+  state.log.push({key, lane:sp.lane+1, sample:laneLabel(sp.lane), color:sub.c, look: sub.c ? sub.cn : 'farblos (UV)', solvent:solventObj().n, rf});
+  renderLog();
+}
+function renderLog(){
+  const tb = document.getElementById('logBody');
+  if (!state.log.length){ tb.innerHTML = '<tr><td colspan="5" class="muted">Noch keine Werte. Miss einen Fleck aus und prüfe deinen R<sub>f</sub>-Wert.</td></tr>'; return; }
+  tb.innerHTML = state.log.map(r => `<tr><td>${r.lane}</td><td>${r.sample}</td><td><span class="swatch" style="background:${r.color||'#2b2140'}"></span>${r.look}</td><td>${r.solvent}</td><td>${fmt(r.rf,2)}</td></tr>`).join('');
+}
+document.getElementById('clearLog').addEventListener('click', () => { state.log = []; renderLog(); });
+
+buildLanes(); updatePol(); render();
+
+/* ---------- Cases ---------- */
+const CASES = [
+  {id:'pA', title:'Probe A: grünes Bonbon', opts:['E102','E110','E129','E122','E133']},
+  {id:'pB', title:'Probe B: orangefarbenes Gummibärchen', opts:['E102','E110','E129','E122','E133']},
+  {id:'pC', title:'Probe C: lila Brausepulver', opts:['E102','E110','E129','E122','E133']},
+  {id:'pD', title:'Probe D: Kombi-Schmerztablette', opts:['IBU','ASS','PAR','COF']}
+];
+document.getElementById('cases').innerHTML = CASES.map(c => `
+  <div class="box">
+    <h3>${c.title}</h3>
+    <div class="checks">${c.opts.map(o => `<label><input type="checkbox" data-case="${c.id}" value="${o}"> ${SUBS[o].n}</label>`).join('')}</div>
+    <button class="btn" data-checkcase="${c.id}" style="margin-top:.5rem">Lösung prüfen</button>
+    <div class="feedback" id="fb_${c.id}"></div>
+  </div>`).join('');
+document.getElementById('cases').addEventListener('click', e => {
+  const id = e.target.dataset.checkcase; if (!id) return;
+  const chosen = [...document.querySelectorAll(`input[data-case="${id}"]:checked`)].map(i => i.value);
+  const truth = SAMPLES[id].comp;
+  const f = document.getElementById('fb_'+id);
+  const right = chosen.filter(c => truth.includes(c)).length;
+  const wrong = chosen.filter(c => !truth.includes(c)).length;
+  if (right === truth.length && wrong === 0){ f.className='feedback ok'; f.textContent='Richtig identifiziert. Beschreibe in deinem Protokoll, an welchen Beobachtungen du das erkannt hast.'; }
+  else if (!chosen.length){ f.className='feedback bad'; f.textContent='Kreuze die Bestandteile an, die du im Labor nachgewiesen hast.'; }
+  else { f.className='feedback bad'; f.textContent = `Noch nicht ganz: ${right} von ${truth.length} Bestandteilen richtig` + (wrong ? `, ${wrong} Auswahl passt nicht.` : '.') + ' Prüfe deine Platte mit einem Co-Spot nach.'; }
+});
+
+/* ---------- Quiz ---------- */
+const QUIZ = [
+  {q:'Was ist bei einer Kieselgel-DC-Platte die stationäre Phase?', o:['Das Fließmittel','Die polare Kieselgel-Schicht','Die Glas- oder Aluminiumträgerplatte','Die Gasphase in der Kammer'], r:1,
+   e:'Die Kieselgel-Schicht bleibt an Ort und Stelle. Ihre Si–OH-Gruppen machen sie stark polar.'},
+  {q:'Warum zeichnet man die Startlinie mit Bleistift und nicht mit Kugelschreiber?', o:['Bleistift ist auf Kieselgel besser sichtbar','Graphit löst sich nicht im Fließmittel, die Farbstoffe der Kugelschreibertinte würden mitwandern','Kugelschreiber beschädigt die Schicht nicht','Bleistift reagiert mit den Proben'], r:1,
+   e:'Die Farbstoffe der Kugelschreibertinte würden selbst chromatographiert und das Ergebnis verfälschen.'},
+  {q:'Ein Fleck ist 24 mm gewandert, die Fließmittelfront 60 mm. Wie groß ist der Rf-Wert?', o:['2,5','0,6','0,4','36'], r:2,
+   e:'Rf = 24 mm : 60 mm = 0,4. Der Wert hat keine Einheit und liegt immer zwischen 0 und 1.'},
+  {q:'Alle Flecken bleiben auf der Startlinie liegen. Was ist die sinnvollste Änderung?', o:['Ein polareres Fließmittel verwenden','Ein unpolareres Fließmittel verwenden','Mehr Probe auftragen','Die Platte kürzer entwickeln'], r:0,
+   e:'Ein polareres Fließmittel konkurriert stärker mit den Stoffen um die Plätze an der polaren Kieselgel-Oberfläche und löst sie besser ab.'},
+  {q:'Warum trägt man Referenzsubstanzen auf dieselbe Platte auf wie die unbekannte Probe?', o:['Damit die Platte voll ist','Weil Rf-Werte von Platte, Fließmittel, Temperatur und Kammersättigung abhängen und nur unter identischen Bedingungen vergleichbar sind','Weil die Referenz die Probe anfärbt','Weil sonst die Fließmittelfront nicht sichtbar ist'], r:1,
+   e:'Genau darauf beruht die Co-Chromatographie: Probe und Referenz erleben exakt dieselben Bedingungen.'},
+  {q:'Warum erscheinen farblose Wirkstoffe wie Coffein unter UV-Licht (254 nm) als dunkle Flecken?', o:['Sie leuchten unter UV-Licht schwarz','Die Schicht enthält einen Fluoreszenzindikator, die Stoffe absorbieren das UV-Licht und unterdrücken an dieser Stelle die Fluoreszenz','Das UV-Licht zersetzt die Stoffe zu Kohlenstoff','Die Stoffe reagieren mit dem Kieselgel zu einem dunklen Produkt'], r:1,
+   e:'Man spricht von Fluoreszenzlöschung. Die Platte leuchtet grün, nur wo ein UV-aktiver Stoff sitzt, bleibt sie dunkel.'},
+  {q:'Warum muss die Startlinie oberhalb des Fließmittelspiegels liegen?', o:['Sonst lösen sich die Proben im Fließmittelvorrat, statt auf der Platte zu wandern','Sonst steigt das Fließmittel zu schnell','Sonst ist der Rf-Wert größer als 1','Das spielt keine Rolle'], r:0,
+   e:'Taucht die Startlinie ein, werden die Proben aus der Platte in das Fließmittel in der Kammer ausgewaschen.'}
+];
+let answered = 0, correct = 0;
+const quizEl = document.getElementById('quiz');
+quizEl.innerHTML = QUIZ.map((x,i) => `
+  <div class="quiz-q box">
+    <h3>${i+1}. ${x.q}</h3>
+    <div class="opts">${x.o.map((o,j) => `<button data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div>
+    <div class="feedback" id="qfb_${i}"></div>
+  </div>`).join('');
+quizEl.addEventListener('click', e => {
+  const b = e.target.closest('button[data-q]'); if (!b) return;
+  const i = +b.dataset.q, j = +b.dataset.o, q = QUIZ[i];
+  const group = quizEl.querySelectorAll(`button[data-q="${i}"]`);
+  if (group[0].disabled) return;
+  group.forEach(g => { g.disabled = true; if (+g.dataset.o === q.r) g.classList.add('right'); });
+  const f = document.getElementById('qfb_'+i);
+  answered++;
+  if (j === q.r){ correct++; f.className='feedback ok'; f.textContent='Richtig. '+q.e; }
+  else { b.classList.add('wrong'); f.className='feedback bad'; f.textContent='Nicht ganz. '+q.e; }
+  if (answered === QUIZ.length){
+    const s = document.getElementById('quizScore'); s.style.display='block';
+    s.textContent = `Ergebnis: ${correct} von ${QUIZ.length} Fragen richtig.` + (correct < QUIZ.length ? ' Schau dir die Erklärungen bei den falsch beantworteten Fragen noch einmal an.' : ' Du hast die Grundlagen der DC sicher drauf.');
+  }
+});
+
+})();
+</script>
+</body>
+</html>

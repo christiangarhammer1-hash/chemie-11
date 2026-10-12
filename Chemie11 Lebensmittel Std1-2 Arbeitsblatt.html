@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chemie 11 – Zusammensetzung von Lebensmitteln (Arbeitsblatt)</title>
+<style>
+  :root {
+    --ink: #1b1f24;
+    --muted: #55606b;
+    --rule: #8a949e;
+    --tint: #eef2f4;
+    --accent: #1f5f5b;
+    --accent-tint: #e3efed;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    padding: 16px;
+    background: #d9dde0;
+    color: var(--ink);
+    font-family: "Segoe UI", Calibri, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.4;
+  }
+  .blatt {
+    max-width: 182mm;
+    margin: 0 auto;
+    background: #fff;
+    padding: 10mm 10mm 12mm;
+  }
+  h1 { font-size: 19pt; line-height: 1.15; margin: 0 0 2mm; color: var(--accent); }
+  h2 {
+    font-size: 13pt; margin: 4mm 0 2mm; padding: 1.2mm 3mm;
+    background: var(--accent); color: #fff;
+  }
+  h3 { font-size: 11pt; margin: 5mm 0 1.5mm; }
+  p { margin: 0 0 2mm; }
+  .kopf { display: flex; justify-content: space-between; gap: 6mm; font-size: 9.5pt; color: var(--muted); border-bottom: 0.4mm solid var(--ink); padding-bottom: 1.5mm; margin-bottom: 4mm; }
+  .namen { display: flex; gap: 5mm; margin: 3mm 0 4mm; }
+  .namen div { flex: 1; border-bottom: 0.3mm solid var(--ink); padding-top: 5mm; font-size: 9pt; color: var(--muted); }
+  .namen div.schmal { flex: 0 0 32mm; }
+  .box { border: 0.3mm solid var(--rule); background: var(--tint); padding: 2mm 3.5mm; margin: 2mm 0 2.5mm; break-inside: avoid; }
+  .box.ziel { background: var(--accent-tint); border-color: var(--accent); }
+  .box p:last-child, .box ul:last-child { margin-bottom: 0; }
+  .tipp { border-left: 1.2mm solid var(--accent); background: #fff; padding: 1.5mm 3mm; margin: 2mm 0 3mm; font-size: 9.5pt; break-inside: avoid; }
+  .tipp b { color: var(--accent); }
+  ul { margin: 1mm 0 2mm; padding-left: 5mm; }
+  li { margin-bottom: 0.8mm; }
+  .aufg { margin-bottom: 3mm; }
+  .teil, .tipp, tr { break-inside: avoid; }
+  .aufg > .titel { font-weight: 700; margin-bottom: 1.5mm; }
+  .aufg .nr { display: inline-block; min-width: 6mm; height: 6mm; line-height: 6mm; text-align: center; border: 0.4mm solid var(--ink); border-radius: 50%; margin-right: 2mm; font-size: 9.5pt; }
+  .teil { margin: 1.5mm 0 1mm 8mm; text-indent: -5mm; padding-left: 5mm; }
+  .teil .buch { font-weight: 700; display: inline-block; width: 5mm; text-indent: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1.5mm 0 3mm; }
+  th, td { border: 0.3mm solid var(--ink); padding: 1.5mm 2mm; vertical-align: top; text-align: left; }
+  th { background: var(--tint); font-size: 9.5pt; }
+  td.leer { height: 14mm; }
+  td.leer.hoch { height: 20mm; }
+  td.vor { font-weight: 600; width: 27mm; }
+  .zeilen {
+    height: calc(var(--n) * 7mm);
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 6.6mm, var(--rule) 6.6mm, var(--rule) 7mm);
+    margin: 1mm 0 2mm 0;
+  }
+  .zeilen.einger { margin-left: 8mm; }
+  .abb-reihe { display: flex; gap: 4mm; margin: 2mm 0 2mm; }
+  .abb { flex: 1; border: 0.3mm solid var(--rule); padding: 2mm; break-inside: avoid; }
+  .abb svg { width: 100%; height: auto; display: block; }
+  .abb .unter { font-size: 9pt; color: var(--muted); margin-top: 1mm; min-height: 9mm; }
+  .abb .zeilen { margin-top: 1.5mm; }
+  .abb.breit { flex: 0 0 100%; }
+  .nw { font-size: 9.5pt; }
+  .nw td, .nw th { padding: 1mm 2.5mm; }
+  .nw td.zahl { text-align: right; white-space: nowrap; }
+  .nw td.ein { padding-left: 7mm; color: var(--muted); }
+  .zutaten { border: 0.3mm solid var(--ink); padding: 2.5mm 3.5mm; margin: 2mm 0 3mm; font-size: 10.5pt; line-height: 1.9; }
+  .zutaten .kopfz { display: block; font-size: 9pt; color: var(--muted); line-height: 1.3; margin-bottom: 1mm; }
+  .zusatz { font-size: 9pt; color: var(--muted); border-top: 0.3mm solid var(--rule); margin-top: 2mm; padding-top: 1.5mm; font-size: 8.5pt; }
+  .checks { list-style: none; padding-left: 0; }
+  .checks li::before { content: "\2610"; display: inline-block; width: 6mm; font-size: 12pt; }
+  .stunde-trenner { break-before: page; }
+  .seitenumbruch { break-before: page; }
+
+  @page { size: A4 portrait; margin: 10mm 12mm 10mm; }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 9.8pt; }
+    .blatt { max-width: none; margin: 0; padding: 0; }
+  }
+  @media (max-width: 640px) {
+    .abb-reihe { flex-direction: column; }
+    .namen { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<main class="blatt">
+
+  <div class="kopf">
+    <span>Chemie · Jahrgangsstufe 11 · Lernbereich 2: Lebensmittelchemie</span>
+    <span>Bearbeitungszeit: 2 × 45 Minuten</span>
+  </div>
+
+  <h1>Zusammensetzung von Lebensmitteln</h1>
+
+  <div class="namen">
+    <div>Name</div>
+    <div class="schmal">Klasse</div>
+    <div class="schmal">Datum</div>
+  </div>
+
+  <div class="box ziel">
+    <p><b>Das kannst du am Ende der zwei Stunden:</b></p>
+    <ul>
+      <li>Lebensmittel nach selbst gewählten Kriterien ordnen und deine Kriterien begründen.</li>
+      <li>Fette, Kohlenhydrate und Proteine anhand ihrer Bausteine und funktionellen Gruppen unterscheiden.</li>
+      <li>die Bedeutung von je einem Vitamin und einem Mineralsalz beschreiben.</li>
+      <li>Ballaststoffe, sekundäre Pflanzenstoffe und Zusatzstoffe auf einer Zutatenliste erkennen und einordnen.</li>
+    </ul>
+  </div>
+
+  <!-- ===================== STUNDE 1 ===================== -->
+  <h2>Stunde 1 · Nährstoffe: Bau und Funktion</h2>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">1</span>Lebensmittel ordnen</div>
+    <div class="box">
+      <p><b>Zwölf Lebensmittel:</b> Vollkornbrot · Butter · Hähnchenbrust · Apfel · Haferflocken · Olivenöl · Linsen · Haushaltszucker · Gouda · Orange · Spinat · Cola</p>
+    </div>
+    <div class="teil"><span class="buch">a)</span>Lege <b>ein</b> Ordnungskriterium fest (z. B. „Was ist der mengenmäßig wichtigste Bestandteil?“) und trage die Lebensmittel in die Tabelle ein. Ein Lebensmittel darf in mehreren Spalten stehen.</div>
+    <table>
+      <tr>
+        <th>Mein Kriterium: <br><br></th>
+        <th>Gruppe 1:<br>&nbsp;</th>
+        <th>Gruppe 2:<br>&nbsp;</th>
+        <th>Gruppe 3:<br>&nbsp;</th>
+      </tr>
+      <tr>
+        <td class="leer hoch" style="width:22%"></td>
+        <td class="leer hoch"></td>
+        <td class="leer hoch"></td>
+        <td class="leer hoch"></td>
+      </tr>
+    </table>
+    <div class="teil"><span class="buch">b)</span>Nenne ein Lebensmittel, das du nicht eindeutig zuordnen konntest, und begründe, woran das liegt.</div>
+    <div class="zeilen einger" style="--n:2"></div>
+  </div>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">2</span>Nährwerttabelle auswerten</div>
+    <table class="nw">
+      <tr><th colspan="2">Knuspermüsli „Beere“ – Nährwerte pro 100 g</th></tr>
+      <tr><td>Brennwert</td><td class="zahl">1650 kJ / 390 kcal</td></tr>
+      <tr><td>Fett</td><td class="zahl">9,0 g</td></tr>
+      <tr><td class="ein">davon gesättigte Fettsäuren</td><td class="zahl">1,5 g</td></tr>
+      <tr><td>Kohlenhydrate</td><td class="zahl">62 g</td></tr>
+      <tr><td class="ein">davon Zucker</td><td class="zahl">12 g</td></tr>
+      <tr><td>Ballaststoffe</td><td class="zahl">8,5 g</td></tr>
+      <tr><td>Eiweiß</td><td class="zahl">11 g</td></tr>
+      <tr><td>Salz</td><td class="zahl">0,05 g</td></tr>
+    </table>
+    <div class="teil"><span class="buch">a)</span>Nenne die drei Nährstoffklassen, die man als <b>Makronährstoffe</b> bezeichnet.</div>
+    <div class="zeilen einger" style="--n:1"></div>
+    <div class="teil"><span class="buch">b)</span>Berechne, wie viel Gramm von 100 g Müsli auf Fett, Kohlenhydrate und Eiweiß zusammen entfallen. Erkläre, warum du „davon Zucker“ nicht noch einmal addieren darfst.</div>
+    <div class="zeilen einger" style="--n:3"></div>
+    <div class="teil"><span class="buch">c)</span>Beschreibe, woraus der Rest der 100 g bestehen könnte.</div>
+    <div class="zeilen einger" style="--n:2"></div>
+  </div>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">3</span>Der Bau der Makronährstoffe</div>
+    <div class="tipp"><b>Tipp:</b> Funktionelle Gruppen aus der 10. Klasse: Hydroxygruppe –OH · Carbonylgruppe C=O (Aldehyd: am Kettenende, Keton: mitten in der Kette) · Carboxygruppe –COOH · Estergruppe –COO– · Aminogruppe –NH₂.</div>
+    <div class="abb-reihe">
+      <div class="abb">
+        <!-- Glucose, offenkettig, vereinfacht -->
+        <svg viewBox="0 0 320 180" role="img" aria-label="Strukturformel Glucose, offenkettig, vereinfacht">
+          <g stroke="#1b1f24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="40,90 80,115 120,90 160,115 200,90 240,115"/>
+            <line x1="37" y1="90" x2="37" y2="64"/><line x1="43" y1="90" x2="43" y2="64"/>
+            <line x1="80" y1="115" x2="80" y2="140"/>
+            <line x1="120" y1="90" x2="120" y2="65"/>
+            <line x1="160" y1="115" x2="160" y2="140"/>
+            <line x1="200" y1="90" x2="200" y2="65"/>
+            <line x1="240" y1="115" x2="272" y2="96"/>
+          </g>
+          <g font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#1b1f24" text-anchor="middle">
+            <text x="40" y="55">O</text>
+            <text x="80" y="158">OH</text>
+            <text x="120" y="55">OH</text>
+            <text x="160" y="158">OH</text>
+            <text x="200" y="55">OH</text>
+            <text x="291" y="98">OH</text>
+          </g>
+        </svg>
+        <div class="unter"><b>A</b> · Glucose (Traubenzucker), vereinfacht und offenkettig gezeichnet</div>
+        <div class="zeilen" style="--n:3"></div>
+      </div>
+      <div class="abb">
+        <!-- Triglycerid -->
+        <svg viewBox="0 0 270 280" role="img" aria-label="Schematische Strukturformel eines Fettmoleküls (Triglycerid)">
+          <g stroke="#1b1f24" stroke-width="2" fill="none" stroke-linecap="round">
+            <line x1="40" y1="70" x2="40" y2="230"/>
+            <!-- Zeile 1 -->
+            <line x1="40" y1="70" x2="82" y2="70"/><line x1="98" y1="70" x2="130" y2="70"/>
+            <line x1="127" y1="70" x2="127" y2="42"/><line x1="133" y1="70" x2="133" y2="42"/>
+            <line x1="130" y1="70" x2="172" y2="70"/>
+            <!-- Zeile 2 -->
+            <line x1="40" y1="150" x2="82" y2="150"/><line x1="98" y1="150" x2="130" y2="150"/>
+            <line x1="127" y1="150" x2="127" y2="122"/><line x1="133" y1="150" x2="133" y2="122"/>
+            <line x1="130" y1="150" x2="172" y2="150"/>
+            <!-- Zeile 3 -->
+            <line x1="40" y1="230" x2="82" y2="230"/><line x1="98" y1="230" x2="130" y2="230"/>
+            <line x1="127" y1="230" x2="127" y2="202"/><line x1="133" y1="230" x2="133" y2="202"/>
+            <line x1="130" y1="230" x2="172" y2="230"/>
+          </g>
+          <g font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#1b1f24" text-anchor="middle">
+            <text x="90" y="76">O</text><text x="130" y="36">O</text><text x="192" y="76">R¹</text>
+            <text x="90" y="156">O</text><text x="130" y="116">O</text><text x="192" y="156">R²</text>
+            <text x="90" y="236">O</text><text x="130" y="196">O</text><text x="192" y="236">R³</text>
+          </g>
+        </svg>
+        <div class="unter"><b>B</b> · Fettmolekül (Triglycerid). R¹, R², R³: lange Kohlenwasserstoffketten</div>
+        <div class="zeilen" style="--n:3"></div>
+      </div>
+      <div class="abb">
+        <!-- Alanin -->
+        <svg viewBox="0 0 260 170" role="img" aria-label="Strukturformel der Aminosäure Alanin">
+          <g stroke="#1b1f24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="54,104 95,85 150,110"/>
+            <line x1="95" y1="85" x2="95" y2="52"/>
+            <line x1="147" y1="110" x2="147" y2="136"/><line x1="153" y1="110" x2="153" y2="136"/>
+            <line x1="150" y1="110" x2="190" y2="88"/>
+          </g>
+          <g font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#1b1f24" text-anchor="middle">
+            <text x="30" y="110">H₂N</text>
+            <text x="95" y="40">CH₃</text>
+            <text x="150" y="156">O</text>
+            <text x="210" y="92">OH</text>
+          </g>
+        </svg>
+        <div class="unter"><b>C</b> · Alanin, eine Aminosäure (Baustein der Proteine)</div>
+        <div class="zeilen" style="--n:3"></div>
+      </div>
+    </div>
+    <div class="teil"><span class="buch">a)</span>Kreise in A, B und C die funktionellen Gruppen ein und schreibe ihre Namen in die Zeilen unter der Abbildung.</div>
+    <div class="teil"><span class="buch">b)</span>Vervollständige die Tabelle. Ordne dabei A, B und C der passenden Nährstoffklasse zu.</div>
+    <table>
+      <tr>
+        <th>Nährstoffklasse</th>
+        <th>Bausteine</th>
+        <th>Typische funktionelle Gruppen</th>
+        <th>Funktionen im Körper (Stichpunkte)</th>
+      </tr>
+      <tr><td class="vor">Kohlenhydrate<br>(Abb. ___)</td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
+      <tr><td class="vor">Fette<br>(Abb. ___)</td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
+      <tr><td class="vor">Proteine<br>(Abb. ___)</td><td class="leer"></td><td class="leer"></td><td class="leer"></td></tr>
+    </table>
+    <div class="tipp"><b>Hilfe:</b> Zu den Bausteinen der Fette gehören neben den Fettsäuren auch das dreiwertige Alkohol-Molekül Glycerin (Propan-1,2,3-triol). Wenn du bei B nicht weiterkommst: Eine Estergruppe entsteht aus einer Carboxygruppe und einer Hydroxygruppe.</div>
+  </div>
+
+  <!-- ===================== STUNDE 2 ===================== -->
+  <div class="stunde-trenner"></div>
+  <h2>Stunde 2 · Mikronährstoffe und weitere Inhaltsstoffe</h2>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">4</span>Je ein Vitamin und ein Mineralsalz</div>
+    <div class="box">
+      <p><b>Vitamine</b> sind organische Verbindungen, die der Körper nicht oder nicht in ausreichender Menge selbst bilden kann. Er braucht sie nur in kleinen Mengen für den Stoffwechsel.</p>
+      <p><b>Vitamin C (Ascorbinsäure)</b> kann der Mensch nicht selbst herstellen. Es wird zum Aufbau von Kollagen im Bindegewebe benötigt und wirkt als Antioxidans. Ein Mangel führt zur Krankheit Skorbut. Richtwert für Erwachsene: ca. 95–110 mg pro Tag.</p>
+      <p><b>Mineralsalze</b> liefern Ionen, die für viele Körperfunktionen wichtig sind. <b>Calcium</b> liegt in Knochen und Zähnen als Calciumphosphat (Hydroxylapatit, Ca₅(PO₄)₃OH) vor. Außerdem spielen Calcium-Ionen (Ca²⁺) bei Muskelkontraktion, Nervenreizleitung und Blutgerinnung eine Rolle. Richtwert für Erwachsene: ca. 1000 mg pro Tag.</p>
+    </div>
+    <div class="abb-reihe">
+      <div class="abb breit" style="display:flex; gap:5mm; align-items:center;">
+        <div style="flex:0 0 42%;">
+          <svg viewBox="0 0 340 190" role="img" aria-label="Strukturformel der Ascorbinsäure (Vitamin C)">
+            <g stroke="#1b1f24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <!-- Ring -->
+              <line x1="70" y1="75" x2="111" y2="47"/>
+              <line x1="129" y1="47" x2="170" y2="75"/>
+              <line x1="70" y1="75" x2="90" y2="130"/>
+              <line x1="90" y1="130" x2="150" y2="130"/>
+              <line x1="97" y1="123" x2="143" y2="123"/>
+              <line x1="150" y1="130" x2="170" y2="75"/>
+              <!-- C=O -->
+              <line x1="72" y1="72" x2="38" y2="55"/>
+              <line x1="68" y1="78" x2="34" y2="61"/>
+              <!-- OH am Ring -->
+              <line x1="90" y1="130" x2="90" y2="158"/>
+              <line x1="150" y1="130" x2="150" y2="158"/>
+              <!-- Seitenkette -->
+              <polyline points="170,75 215,100 260,75 292,94"/>
+              <line x1="215" y1="100" x2="215" y2="132"/>
+            </g>
+            <g font-family="Segoe UI, Arial, sans-serif" font-size="17" fill="#1b1f24" text-anchor="middle">
+              <text x="120" y="52">O</text>
+              <text x="22" y="62">O</text>
+              <text x="90" y="177">OH</text>
+              <text x="150" y="177">OH</text>
+              <text x="215" y="150">OH</text>
+              <text x="311" y="99">OH</text>
+            </g>
+          </svg>
+        </div>
+        <div style="flex:1;" class="unter"><b>D</b> · Ascorbinsäure (Vitamin C), C₆H₈O₆. Der Fünfring enthält ein Sauerstoff-Atom und eine C=C-Doppelbindung.</div>
+      </div>
+    </div>
+    <div class="teil"><span class="buch">a)</span>Markiere in D alle Hydroxygruppen und kreise die Estergruppe im Ring ein (ein Ester in einem Ring heißt Lacton). Gib die Anzahl der Hydroxygruppen an: ______</div>
+    <div class="teil"><span class="buch">b)</span>Beschreibe die Bedeutung von Vitamin C <b>und</b> von Calcium für den Körper (je zwei Stichpunkte).</div>
+    <div class="zeilen einger" style="--n:2"></div>
+    <div class="teil"><span class="buch">c)</span>Ein Erwachsener nimmt etwa 250 g Kohlenhydrate pro Tag auf (Richtwert für diese Aufgabe) und braucht etwa 100 mg Vitamin C. Berechne, wie oft größer die Kohlenhydratmasse ist. Erkläre damit den Begriff <i>Mikro</i>nährstoffe.</div>
+    <div class="zeilen einger" style="--n:2"></div>
+  </div>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">5</span>Ballaststoffe, sekundäre Pflanzenstoffe, Zusatzstoffe</div>
+    <div class="box">
+      <p><b>Ballaststoffe</b> sind überwiegend pflanzliche Kohlenhydrate (z. B. Cellulose), die körpereigene Verdauungsenzyme nicht spalten können. Sie quellen im Darm, sättigen und dienen Darmbakterien als Nahrung.</p>
+      <p><b>Sekundäre Pflanzenstoffe</b> bildet die Pflanze nicht für ihren Grundstoffwechsel, sondern z. B. als Farb-, Duft-, Bitter- oder Abwehrstoffe. Beispiele: Anthocyane (Farbstoffe in Heidelbeeren und Rotkohl), Carotinoide (Farbstoffe in Karotten), Glucosinolate (scharfe Stoffe in Senf und Kohl). Ihre gesundheitlichen Wirkungen sind teilweise noch nicht eindeutig geklärt.</p>
+      <p><b>Zusatzstoffe</b> werden Lebensmitteln aus technologischen Gründen zugesetzt (z. B. zur Haltbarkeit). In der EU sind sie geprüft und zugelassen und tragen eine <b>E-Nummer</b>.</p>
+    </div>
+    <table>
+      <tr><th>Gruppe der Zusatzstoffe</th><th>Wozu?</th><th>Beispiel</th></tr>
+      <tr><td>Konservierungsstoff</td><td>verlängert die Haltbarkeit</td><td>Sorbinsäure (E 200)</td></tr>
+      <tr><td>Antioxidationsmittel</td><td>verhindert Verderb durch Sauerstoff</td><td>Ascorbinsäure (E 300)</td></tr>
+      <tr><td>Säuerungsmittel</td><td>stellt einen sauren Geschmack ein</td><td>Citronensäure (E 330)</td></tr>
+      <tr><td>Emulgator</td><td>verbindet Fett und Wasser zu einer stabilen Mischung</td><td>Lecithin (E 322)</td></tr>
+    </table>
+  </div>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">6</span>Eine Zutatenliste lesen</div>
+    <div class="zutaten">
+      <span class="kopfz">Zutaten: Knuspermüsli „Beere“</span>
+      Haferflocken (45 %), Weizenvollkornflocken (15 %), Rosinen (8 %), Zucker, Sonnenblumenöl, Haselnüsse (5 %), getrocknete Heidelbeeren (3 %), Säuerungsmittel: Citronensäure, Antioxidationsmittel: Ascorbinsäure, Emulgator: Sojalecithin, Meersalz.
+    </div>
+    <div class="teil"><span class="buch">a)</span>Bearbeite die Zutatenliste direkt im Kasten:<br>
+      – Kreise alle <b>Zusatzstoffe</b> ein.<br>
+      – Unterstreiche zwei Zutaten, die viele <b>Ballaststoffe</b> liefern.<br>
+      – Markiere mit einer Wellenlinie eine Zutat, die <b>sekundäre Pflanzenstoffe</b> enthält.</div>
+    <div class="teil"><span class="buch">b)</span>Trage die Zusatzstoffe aus der Liste mit Funktion und E-Nummer ein (die E-Nummern findest du in der Tabelle bei Aufgabe 5).</div>
+    <table>
+      <tr><th>Zusatzstoff</th><th>Funktion im Müsli</th><th>E-Nummer</th></tr>
+      <tr><td class="leer" style="height:9mm"></td><td></td><td></td></tr>
+      <tr><td class="leer" style="height:9mm"></td><td></td><td></td></tr>
+      <tr><td class="leer" style="height:9mm"></td><td></td><td></td></tr>
+    </table>
+  </div>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">7</span>Werbeaussage beurteilen</div>
+    <div class="box">
+      <p><b>Auf einer Verpackung steht:</b> „Ganz ohne Chemie – nur natürliche Zutaten!“</p>
+    </div>
+    <div class="teil"><span class="buch">a)</span>Beurteile die Aussage in vier bis fünf Sätzen. Nutze mindestens drei Begriffe aus dieser Doppelstunde (z. B. Makronährstoff, Zusatzstoff, Ascorbinsäure, E-Nummer, sekundärer Pflanzenstoff).</div>
+    <div class="zeilen einger" style="--n:4"></div>
+    <div class="tipp"><b>Hilfe:</b> Überlege, ob es Lebensmittel gibt, die nicht aus Stoffen mit chemischer Zusammensetzung bestehen. Prüfe außerdem, ob Citronensäure und Ascorbinsäure nur im Labor vorkommen oder auch in Früchten und Gemüse.</div>
+  </div>
+
+  <div class="aufg">
+    <div class="titel"><span class="nr">8</span>Zusatzaufgabe für Schnelle: Brennwert nachrechnen</div>
+    <p>Mit diesen Richtwerten kannst du den Brennwert des Müslis aus Aufgabe 2 überprüfen: Fett 37 kJ/g · Kohlenhydrate 17 kJ/g · Eiweiß 17 kJ/g · Ballaststoffe 8 kJ/g. Berechne den Brennwert pro 100 g und vergleiche ihn mit der Angabe auf der Tabelle.</p>
+    <div class="zeilen" style="--n:2"></div>
+  </div>
+
+  <div class="box">
+    <p><b>Selbsteinschätzung:</b> Das kann ich schon sicher (bitte ankreuzen).</p>
+    <ul class="checks">
+      <li>Ich kann Fette, Kohlenhydrate und Proteine an ihren Bausteinen und funktionellen Gruppen erkennen.</li>
+      <li>Ich kann erklären, was Mikronährstoffe sind, und nenne je ein Beispiel für ein Vitamin und ein Mineralsalz.</li>
+      <li>Ich kann auf einer Zutatenliste Zusatzstoffe, Ballaststoffquellen und sekundäre Pflanzenstoffe unterscheiden.</li>
+    </ul>
+  </div>
+
+  <p class="zusatz">Lehrplanbezug: LehrplanPLUS Gymnasium Bayern, Chemie 11, Lernbereich 2 (Lebensmittelchemie). Strukturformeln sind vereinfacht dargestellt, die Raumstruktur (Stereochemie) wird erst in einer späteren Unterrichtseinheit behandelt.</p>
+
+</main>
+</body>
+</html>
